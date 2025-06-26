@@ -1,6 +1,6 @@
 # 📦 GitLab Project Version Packager
 
-**GitLab Version Packager** es un sistema completo de CI/CD distribuido en tres repositorios que colaboran entre sí para generar y almacenar versiones empaquetadas de software. Cada versión se construye combinando una base genérica (`isa-generico`) con una parte específica de proyecto (`isa-proyecto`), y se almacena automáticamente en un repositorio central de versiones (`isa-versiones`).
+**GitLab Project Version Packager** es un sistema completo de CI/CD distribuido en tres repositorios que colaboran entre sí para generar y almacenar versiones empaquetadas de software. Cada versión se construye combinando una base genérica (`isa-generico`) con una parte específica de proyecto (`isa-proyecto`), y se almacena automáticamente en un repositorio central de versiones (`isa-versiones`).
 En este caso ISA es un software especifico, podria usarse con cualquier otro tipo de software que contase con una parte generica y otra especifica de proyecto.
 El principal fin de este proyecto es evitar la duplicidad y facilitar el mantenimiento del código.
 
