@@ -1,7 +1,7 @@
 # 📦 GitLab Project Version Packager
 
 **GitLab Project Version Packager** es un sistema completo de CI/CD distribuido en tres repositorios que colaboran entre sí para generar y almacenar versiones empaquetadas de software. Cada versión se construye combinando una base genérica (`repositorio-generico`) con una parte específica de proyecto (`repositorio-proyecto`), y se almacena automáticamente en un repositorio central de versiones (`repositorio-versiones`).
-En este caso repositorio es un software especifico, podria usarse con cualquier otro tipo de software que contase con una parte generica y otra especifica de proyecto.
+Se requiere de modularidad completa del código para poder hacer uso de la versión actual.
 El principal fin de este proyecto es evitar la duplicidad y facilitar el mantenimiento del código.
 
 > 🔧 Sistema funcional orientado a entornos donde se comparten componentes entre múltiples productos o clientes, facilitando automatización y trazabilidad de versiones.
