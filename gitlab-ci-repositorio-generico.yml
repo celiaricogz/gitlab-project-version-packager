@@ -1,0 +1,44 @@
+stages:
+  - build
+  - notificar
+
+build_zip:
+  stage: build
+  tags:
+    - zip
+  image: ubuntu:latest
+  before_script:
+    - apt-get update && apt-get install -y git zip
+  variables:
+    CI_USER: gitlab-ci-token
+    CI_TOKEN: $CI_JOB_TOKEN
+  script:
+    - git config --global http.sslVerify false
+    # Clona repositorio_proyecto1 en un directorio temporal
+    - git clone --depth 1 http://$CI_USER:$CI_TOKEN@<GITLAB_URL>/repositorio/repositorio-proyecto1.git tmp_proyecto
+
+    # Copia el contenido al proyecto actual (ajustar si quieres en una carpeta específica)
+    - mkdir -p versiones/repositorio_generico_base/repositorio
+    - cp -r tmp_proyecto/* versiones/repositorio_generico_base/repositorio/
+    - cp -r * versiones/repositorio_generico_base/ || true
+
+    # Crea el ZIP
+    - cd versiones && zip -r repositorio_generico_base.zip repositorio_generico_base
+
+  artifacts:
+    paths:
+      - versiones/repositorio_generico_base.zip
+
+avrepositorior_versiones:
+  stage: notificar
+  tags:
+    - notifyer
+  image: ubuntu:latest
+  before_script:
+    - apt-get update && apt-get install -y curl
+  script:
+    - >
+      curl -X POST -F token=$VERSIONS_TRIGGER_TOKEN -F ref=main "http://<GITLAB_URL>/api/v4/projects/repositorio%2Fversiones/trigger/pipeline"
+  only:
+    - main
+  when: on_success

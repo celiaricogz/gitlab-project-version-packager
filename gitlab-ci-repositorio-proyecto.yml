@@ -1,0 +1,44 @@
+stages:
+  - build
+  - notificar
+
+build_zip:
+  stage: build
+  tags:
+    - zip
+  image: ubuntu:latest
+  before_script:
+    - apt-get update && apt-get install -y git zip
+  variables:
+    CI_USER: gitlab-ci-token
+    CI_TOKEN: $CI_JOB_TOKEN  # este token ya está disponible por defecto 
+  script:
+    - git config --global http.sslVerify false 
+    # Clona repositorio_generico en un directorio temporal
+    - git clone --depth 1 http://$CI_USER:$CI_TOKEN@<GITLAB_URL>/repositorio/repositorio-generico.git tmp_generico
+
+    # Copia el contenido al proyecto actual (ajustar si quieres en una carpeta específica)
+    - mkdir -p versiones/repositorio_simple_simulador/repositorio
+    - cp -r tmp_generico/* versiones/repositorio_simple_simulador/repositorio/
+    - cp -r * versiones/repositorio_simple_simulador/ || true  # copia el propio código
+
+    # Crea el ZIP
+    - cd versiones && zip -r repositorio_simple_simulador.zip repositorio_simple_simulador
+  artifacts:
+    paths:
+      - versiones/repositorio_simple_simulador.zip
+
+avrepositorior_versiones:
+  stage: notificar
+  tags:
+    - notifyer
+  image: ubuntu:latest
+  before_script:
+    - apt-get update && apt-get install -y curl
+  script:
+    - >
+      curl -X POST -F token=$VERSIONS_TRIGGER_TOKEN -F ref=main "http://<GITLAB_URL>/api/v4/projects/repositorio%2Fversiones/trigger/pipeline"
+  only:
+    - main
+  when: on_success
+

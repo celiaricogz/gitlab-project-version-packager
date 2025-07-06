@@ -1,7 +1,7 @@
 # 📦 GitLab Project Version Packager
 
-**GitLab Project Version Packager** es un sistema completo de CI/CD distribuido en tres repositorios que colaboran entre sí para generar y almacenar versiones empaquetadas de software. Cada versión se construye combinando una base genérica (`isa-generico`) con una parte específica de proyecto (`isa-proyecto`), y se almacena automáticamente en un repositorio central de versiones (`isa-versiones`).
-En este caso ISA es un software especifico, podria usarse con cualquier otro tipo de software que contase con una parte generica y otra especifica de proyecto.
+**GitLab Project Version Packager** es un sistema completo de CI/CD distribuido en tres repositorios que colaboran entre sí para generar y almacenar versiones empaquetadas de software. Cada versión se construye combinando una base genérica (`repositorio-generico`) con una parte específica de proyecto (`repositorio-proyecto`), y se almacena automáticamente en un repositorio central de versiones (`repositorio-versiones`).
+En este caso repositorio es un software especifico, podria usarse con cualquier otro tipo de software que contase con una parte generica y otra especifica de proyecto.
 El principal fin de este proyecto es evitar la duplicidad y facilitar el mantenimiento del código.
 
 > 🔧 Sistema funcional orientado a entornos donde se comparten componentes entre múltiples productos o clientes, facilitando automatización y trazabilidad de versiones.
@@ -12,23 +12,23 @@ El principal fin de este proyecto es evitar la duplicidad y facilitar el manteni
 
 El sistema está formado por tres repositorios interconectados:
 
-### 1. `isa-generico`
-- Contiene el código base común a todos los proyectos ISA.
+### 1. `repositorio-generico`
+- Contiene el código base común a todos los proyectos repositorio.
 - Pipeline:
-  - Clona el repositorio del proyecto (`isa-proyecto1`)
+  - Clona el repositorio del proyecto (`repositorio-proyecto1`)
   - Fusiona los contenidos
   - Genera `.zip` combinados
   - Lanza trigger al repositorio de versiones
 
-### 2. `isa-proyecto1`
-- Contiene la parte específica de un proyecto ISA.
+### 2. `repositorio-proyecto1`
+- Contiene la parte específica de un proyecto repositorio.
 - Pipeline:
-  - Clona `isa-generico`
+  - Clona `repositorio-generico`
   - Combina contenido base + específico
   - Genera `.zip` empaquetado
   - Lanza trigger al repositorio de versiones
 
-### 3. `isa-versiones`
+### 3. `repositorio-versiones`
 - Repositorio central para almacenar los artefactos generados.
 - Pipeline:
   - Se activa mediante trigger desde los otros dos repos
@@ -44,9 +44,9 @@ Este repositorio contiene y documenta los `.gitlab-ci.yml` utilizados en cada un
 
 ```
 .
-├── .gitlab-ci-isa-generico.yml       # CI de isa-generico
-├── .gitlab-ci-isa-proyecto.yml      # CI de isa-proyecto
-├── .gitlab-ci-isa-versiones.yml      # CI de isa-versiones
+├── .gitlab-ci-repositorio-generico.yml       # CI de repositorio-generico
+├── .gitlab-ci-repositorio-proyecto.yml      # CI de repositorio-proyecto
+├── .gitlab-ci-repositorio-versiones.yml      # CI de repositorio-versiones
 ├── README.md                         # Este archivo
 ```
 
@@ -67,11 +67,11 @@ Este repositorio contiene y documenta los `.gitlab-ci.yml` utilizados en cada un
 ## 🚀 Flujo completo resumido
 
 ```
-[Push a main en isa-generico]
+[Push a main en repositorio-generico]
       ↓
 [Pipeline combina genérico + específico]
       ↓
-[Genera .zip] → [Trigger → isa-versiones]
+[Genera .zip] → [Trigger → repositorio-versiones]
                             ↓
                 [Recoge artefactos y guarda]
 ```
@@ -79,11 +79,11 @@ Este repositorio contiene y documenta los `.gitlab-ci.yml` utilizados en cada un
 O de forma alternativa:
 
 ```
-[Push a main en isa-proyecto]
+[Push a main en repositorio-proyecto]
       ↓
 [Pipeline combina específico + genérico]
       ↓
-[Genera .zip] → [Trigger → isa-versiones]
+[Genera .zip] → [Trigger → repositorio-versiones]
                             ↓
                 [Recoge artefactos y guarda]
 ```
@@ -92,7 +92,7 @@ O de forma alternativa:
 
 ## 🔍 Estado actual
 
-- ✅ Pipelines funcionales en `isa-proyecto`,  `isa-generico` e  `isa-versiones`
+- ✅ Pipelines funcionales en `repositorio-proyecto`,  `repositorio-generico` e  `repositorio-versiones`
 - 🚧 En pruebas para despliegue en flujo completo con la herramienta en cuestión.
 
 ---
