@@ -1,0 +1,19 @@
+# Example of using version-assembler.yml from an external repository
+# This file would be included as .gitlab-ci.yml or would document the usage
+
+include:
+  - remote: "https://raw.githubusercontent.com/celiaricogz/gitlab-project-version-packager/main/templates/version-assembler.yml"
+    ref: main
+    file: '/templates/version-assembler.yml'
+
+variables:
+  MODULE_REPOS: >
+    git@gitlab.com/empresa/modulo-generic.git
+    git@gitlab.com/empresa/client-x.git
+    git@gitlab.com/empresa/addon-analytics.git
+
+  MODULE_NAMES: "generic client-x analytics"
+
+  PACKAGE_NAME: "client-x-release"
+  PACKAGE_VERSION: "v1.0.${CI_PIPELINE_IID}"
+

@@ -1,109 +1,126 @@
-# 📦 GitLab Project Version Packager
+# 🚀 GitLab Project Version Packager
 
-**GitLab Project Version Packager** es un sistema completo de CI/CD distribuido en tres repositorios que colaboran entre sí para generar y almacenar versiones empaquetadas de software. Cada versión se construye combinando una base genérica (`repositorio-generico`) con una parte específica de proyecto (`repositorio-proyecto`), y se almacena automáticamente en un repositorio central de versiones (`repositorio-versiones`).
-Se requiere de modularidad completa del código para poder hacer uso de la versión actual.
-El principal fin de este proyecto es evitar la duplicidad y facilitar el mantenimiento del código.
+**GitLab Project Version Packager** is a modular CI/CD system designed to automatically package software by combining multiple reusable modules. It generates delivery `.zip` files on every `merge` to `main`, organizing common and client- or feature-specific code in a structured way.
 
-> 🔧 Sistema funcional orientado a entornos donde se comparten componentes entre múltiples productos o clientes, facilitando automatización y trazabilidad de versiones.
+> This project is aimed at multi-client product environments, where it is necessary to combine generic parts and customizations, maintaining traceability, version control, and process automation.
 
 ---
 
-## 🧩 Arquitectura del sistema
+## 🧩 Modular Architecture
 
-El sistema está formado por tres repositorios interconectados:
+The system is based on three key elements:
 
-### 1. `repositorio-generico`
-- Contiene el código base común a todos los proyectos repositorio.
-- Pipeline:
-  - Clona el repositorio del proyecto (`repositorio-proyecto1`)
-  - Fusiona los contenidos
-  - Genera `.zip` combinados
-  - Lanza trigger al repositorio de versiones
+### 1. Module repositories (`modulo-generic`, `client-a`, `addon-X`)
+- Each contains part of the product.
+- On push to `main`, they generate their individual `.zip` using the `module-packager.yml` template.
 
-### 2. `repositorio-proyecto1`
-- Contiene la parte específica de un proyecto repositorio.
-- Pipeline:
-  - Clona `repositorio-generico`
-  - Combina contenido base + específico
-  - Genera `.zip` empaquetado
-  - Lanza trigger al repositorio de versiones
+### 2. Assembler repository (`repositorio-versionador`)
+- Clones the required modules.
+- Uses the `version-assembler.yml` template and the `assemble.sh` script.
+- Combines the modules, creates a complete `.zip`, and publishes it as a versioned artifact.
 
-### 3. `repositorio-versiones`
-- Repositorio central para almacenar los artefactos generados.
-- Pipeline:
-  - Se activa mediante trigger desde los otros dos repos
-  - Recoge artefactos
-  - Renombra con fecha
-  - Hace commit de los `.zip` generados
+### 3. This repository (`gitlab-project-version-packager`)
+- Contains reusable CI/CD templates (`.yml`)
+- Assembly scripts (`assemble.sh`)
+- Usage documentation and examples
 
 ---
 
-## 📁 Estructura del repositorio actual
-
-Este repositorio contiene y documenta los `.gitlab-ci.yml` utilizados en cada una de las partes:
+## 📁 Repository Structure
 
 ```
 .
-├── .gitlab-ci-repositorio-generico.yml       # CI de repositorio-generico
-├── .gitlab-ci-repositorio-proyecto.yml      # CI de repositorio-proyecto
-├── .gitlab-ci-repositorio-versiones.yml      # CI de repositorio-versiones
-├── README.md                         # Este archivo
+├── templates/
+│   ├── module-packager.yml        # CI to package a single module
+│   └── version-assembler.yml      # CI to assemble multiple modules
+├── scripts/
+│   └── assemble.sh                # Script to package and version
+├── examples/
+│   └── usage-client.yml           # Full usage example
+├── docs/
+│   └── multi-module.md            # Technical usage details
+├── README.md
+└── CHANGELOG.md
 ```
 
 ---
 
-## ⚙️ Requisitos para ejecutar el sistema completo
+## ⚙️ Usage from External Repositories
 
-- GitLab con soporte para GitLab CI/CD
-- Etiquetas de runner: `zip`, `notifyer`, `listener`, `commit`
-- Variables de entorno en GitLab:
-  - `CI_JOB_TOKEN`
-  - `VERSIONS_TRIGGER_TOKEN`
-  - `CI_PUSH_TOKEN`
-  - `API_ACCESS_TOKEN`
+### 🔹 To package a single module (generic, client, addon):
 
----
+```yaml
+include:
+  - project: 'celiaricogz/gitlab-project-version-packager'
+    ref: main
+    file: '/templates/module-packager.yml'
 
-## 🚀 Flujo completo resumido
-
-```
-[Push a main en repositorio-generico]
-      ↓
-[Pipeline combina genérico + específico]
-      ↓
-[Genera .zip] → [Trigger → repositorio-versiones]
-                            ↓
-                [Recoge artefactos y guarda]
+variables:
+  MODULE_FOLDER: 'client-a'
+  PACKAGE_VERSION: "v1.0.${CI_PIPELINE_IID}"
 ```
 
-O de forma alternativa:
+### 🔹 To assemble multiple modules:
 
-```
-[Push a main en repositorio-proyecto]
-      ↓
-[Pipeline combina específico + genérico]
-      ↓
-[Genera .zip] → [Trigger → repositorio-versiones]
-                            ↓
-                [Recoge artefactos y guarda]
+```yaml
+include:
+  - project: 'celiaricogz/gitlab-project-version-packager'
+    ref: main
+    file: '/templates/version-assembler.yml'
+
+variables:
+  MODULE_REPOS: >
+    git@gitlab.com/org/modulo-generic.git
+    git@gitlab.com/org/client-a.git
+    git@gitlab.com/org/addon-analytics.git
+  MODULE_NAMES: "generic client-a analytics"
+  PACKAGE_NAME: "client-a-release"
+  PACKAGE_VERSION: "v1.2.${CI_PIPELINE_IID}"
 ```
 
 ---
 
-## 🔍 Estado actual
+## 🔐 Requirements
 
-- ✅ Pipelines funcionales en `repositorio-proyecto`,  `repositorio-generico` e  `repositorio-versiones`
-- 🚧 En pruebas para despliegue en flujo completo con la herramienta en cuestión.
+- GitLab CI/CD enabled
+- Access via `CI_JOB_TOKEN` or deploy keys to the module repos
+- Runner with `bash`, `git`, `zip` support
+- Protected variables if using private repos
 
 ---
 
-## 👩‍💻 Autora
+## 🧪 Workflow
+
+```
+[modulo-generic.git] → individual .zip
+[client-a.git]       → individual .zip
+[merge to main in assembler]
+          ↓
+[CI clones all specified modules]
+          ↓
+[./scripts/assemble.sh combines and packages]
+          ↓
+[Delivery → client-a-release-v1.2.34.zip]
+```
+
+---
+
+## 📦 Result
+
+- Versioned `.zip` as pipeline artifact
+- `manifest.txt` listing included modules
+- Traceable history by hash, date, or tag
+
+---
+
+## 👩‍💻 Author
 
 **Celia Rico Gutiérrez**  
-Ingeniera DevOps & Fullstack — CI/CD, automatización, empaquetado modular  
+DevOps Engineer — CI/CD automation, modularization, reproducible packaging  
 🔗 [LinkedIn](https://www.linkedin.com/in/celiaricogutierrez)  
-🔗 [Perfil en Malt](https://www.malt.es/profile/celiaricogutierrez)
+🔗 [Malt](https://www.malt.es/profile/celiaricogutierrez)
+🔗 [UpWork](https://www.upwork.com/freelancers/~01898dfb872ff48b7a?mp_source=share)
 
 ---
 
-📅 _Última actualización: Junio 2025_
+📅 _Last updated: July 2025_

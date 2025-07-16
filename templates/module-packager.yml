@@ -1,0 +1,26 @@
+# Reusable template for packaging a module (generic or client)
+
+stages:
+  - package
+
+variables:
+  MODULE_FOLDER: "module"                   # folder to package (inside the repo)
+  OUTPUT_PREFIX: "$MODULE_FOLDER"           # prefix for the zip file name
+  PACKAGE_VERSION: "${CI_COMMIT_SHORT_SHA}" # can be overridden from outside
+
+package_module:
+  stage: package
+  script:
+    - echo "Packaging module: $MODULE_FOLDER"
+    - mkdir -p package/
+    - cp -r "$MODULE_FOLDER" package/
+    - cd package
+    - zip -r "${OUTPUT_PREFIX}-${PACKAGE_VERSION}.zip" "$MODULE_FOLDER"
+    - mv "${OUTPUT_PREFIX}-${PACKAGE_VERSION}.zip" ..
+  artifacts:
+    name: "${OUTPUT_PREFIX}-${PACKAGE_VERSION}"
+    paths:
+      - "${OUTPUT_PREFIX}-${PACKAGE_VERSION}.zip"
+    expire_in: 1 week
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'

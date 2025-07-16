@@ -1,0 +1,40 @@
+# CI to assemble multiple modules and generate a complete package
+
+stages:
+  - assemble
+
+variables:
+  MODULE_REPOS: ""                   # space-separated list of SSH URLs
+  MODULE_NAMES: ""                   # corresponding names in the final package
+  PACKAGE_NAME: "delivery"
+  PACKAGE_VERSION: "${CI_COMMIT_SHORT_SHA}"
+
+assemble_package:
+  stage: assemble
+  image: alpine:latest
+  before_script:
+    - apk add --no-cache git bash zip
+  script:
+    - echo "Cloning modules:"
+    - mkdir -p modules/
+    - IFS=' ' read -r -a repos <<< "$MODULE_REPOS"
+    - IFS=' ' read -r -a names <<< "$MODULE_NAMES"
+    - for i in "${!repos[@]}"; do
+        name="${names[$i]}";
+        repo="${repos[$i]}";
+        echo "$name $repo";
+        git clone --depth=1 "$repo" "modules/$name";
+      done
+
+    - echo "Running assembly..."
+    - chmod +x scripts/assemble.sh
+    - ./scripts/assemble.sh "$PACKAGE_NAME" "$PACKAGE_VERSION" modules/*
+
+  artifacts:
+    name: "${PACKAGE_NAME}-${PACKAGE_VERSION}"
+    paths:
+      - "${PACKAGE_NAME}-${PACKAGE_VERSION}.zip"
+    expire_in: 1 week
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
