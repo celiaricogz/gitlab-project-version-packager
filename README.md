@@ -1,4 +1,4 @@
-# 🚀 GitLab Project Version Packager
+# GitLab Project Version Packager
 
 **GitLab Project Version Packager** is a modular CI/CD system designed to automatically package software by combining multiple reusable modules. It generates delivery `.zip` files on every `merge` to `main`, organizing common and client- or feature-specific code in a structured way.
 
@@ -6,7 +6,7 @@
 
 ---
 
-## 🧩 Modular Architecture
+## Modular Architecture
 
 The system is based on three key elements:
 
@@ -26,7 +26,7 @@ The system is based on three key elements:
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 .
@@ -45,9 +45,9 @@ The system is based on three key elements:
 
 ---
 
-## ⚙️ Usage from External Repositories
+## ⚙Usage from External Repositories
 
-### 🔹 To package a single module (generic, client, addon):
+### To package a single module (generic, client, addon):
 
 ```yaml
 include:
@@ -60,7 +60,7 @@ variables:
   PACKAGE_VERSION: "v1.0.${CI_PIPELINE_IID}"
 ```
 
-### 🔹 To assemble multiple modules:
+### To assemble multiple modules:
 
 ```yaml
 include:
@@ -80,7 +80,7 @@ variables:
 
 ---
 
-## 🔐 Requirements
+## Requirements
 
 - GitLab CI/CD enabled
 - Access via `CI_JOB_TOKEN` or deploy keys to the module repos
@@ -89,7 +89,7 @@ variables:
 
 ---
 
-## 🧪 Workflow
+## Workflow
 
 ```
 [modulo-generic.git] → individual .zip
@@ -105,7 +105,7 @@ variables:
 
 ---
 
-## 📦 Result
+## Result
 
 - Versioned `.zip` as pipeline artifact
 - `manifest.txt` listing included modules
@@ -113,14 +113,14 @@ variables:
 
 ---
 
-## 👩‍💻 Author
+## Author
 
 **Celia Rico Gutiérrez**  
 DevOps Engineer — CI/CD automation, modularization, reproducible packaging  
-🔗 [LinkedIn](https://www.linkedin.com/in/celiaricogutierrez)  
-🔗 [Malt](https://www.malt.es/profile/celiaricogutierrez)
-🔗 [UpWork](https://www.upwork.com/freelancers/~01898dfb872ff48b7a?mp_source=share)
+[LinkedIn](https://www.linkedin.com/in/celiaricogutierrez)  
+[Malt](https://www.malt.es/profile/celiaricogutierrez)
+[UpWork](https://www.upwork.com/freelancers/~01898dfb872ff48b7a?mp_source=share)
 
 ---
 
-📅 _Last updated: July 2025_
+_Last updated: July 2025_
