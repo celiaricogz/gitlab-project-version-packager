@@ -1,4 +1,4 @@
-# 🚀 GitLab Project Version Packager
+# GitLab Project Version Packager
 
 **GitLab Project Version Packager** es un sistema modular de CI/CD diseñado para empaquetar software automáticamente combinando múltiples módulos reutilizables. Permite generar `.zip` de entrega en cada `merge` a `main`, organizando código común y específico de client o funcionalidad de forma estructurada.
 
@@ -6,7 +6,7 @@
 
 ---
 
-## 🧩 Arquitectura modular
+## Arquitectura modular
 
 El sistema se basa en tres elementos clave:
 
@@ -26,7 +26,7 @@ El sistema se basa en tres elementos clave:
 
 ---
 
-## 📁 Estructura del repositorio
+## Estructura del repositorio
 
 ```
 .
@@ -45,9 +45,9 @@ El sistema se basa en tres elementos clave:
 
 ---
 
-## ⚙️ Uso desde repositorios externos
+## Uso desde repositorios externos
 
-### 🔹 Para empaquetar un solo módulo (genérico, client, addon):
+### Para empaquetar un solo módulo (genérico, client, addon):
 
 ```yaml
 include:
@@ -60,7 +60,7 @@ variables:
   PACKAGE_VERSION: "v1.0.${CI_PIPELINE_IID}"
 ```
 
-### 🔹 Para ensamblar múltiples módulos:
+### Para ensamblar múltiples módulos:
 
 ```yaml
 include:
@@ -80,7 +80,7 @@ variables:
 
 ---
 
-## 🔐 Requisitos
+## Requisitos
 
 - GitLab CI/CD activo
 - Acceso por `CI_JOB_TOKEN` o deploy keys a los repos de módulos
@@ -89,7 +89,7 @@ variables:
 
 ---
 
-## 🧪 Flujo de trabajo
+## Flujo de trabajo
 
 ```
 [módulo-generico.git] → .zip individual
@@ -105,7 +105,7 @@ variables:
 
 ---
 
-## 📦 Resultado
+## Resultado
 
 - `.zip` versionado como artefacto de pipeline
 - `manifest.txt` con módulos incluidos
@@ -113,14 +113,14 @@ variables:
 
 ---
 
-## 👩‍💻 Autora
+## Autora
 
 **Celia Rico Gutiérrez**  
 Ingeniera DevOps — Automatización CI/CD, modularización, empaquetado reproducible  
-🔗 [LinkedIn](https://www.linkedin.com/in/celiaricogutierrez)  
-🔗 [Malt](https://www.malt.es/profile/celiaricogutierrez)
-🔗 [UpWork](https://www.upwork.com/freelancers/~01898dfb872ff48b7a?mp_source=share)
+[LinkedIn](https://www.linkedin.com/in/celiaricogutierrez)  
+[Malt](https://www.malt.es/profile/celiaricogutierrez)
+[UpWork](https://www.upwork.com/freelancers/~01898dfb872ff48b7a?mp_source=share)
 
 ---
 
-📅 _Última actualización: Julio 2025_
+_Última actualización: Julio 2025_
